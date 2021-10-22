@@ -11,7 +11,7 @@ function _version() {
 }
 function get_tag() {
   if [ -d ".git" ]; then
-    local tag=$(git describe --tags)
+    local tag=$(git describe --tags --always)
     if ! [ $? -eq 0 ]; then
       local tag='unknown'
     else
@@ -66,10 +66,6 @@ function build() {
   elif [ ${platform} == "image" ]; then
     _info "Start building a Docker image ..."
     docker build . -t ${image_prefix}/${bin_name}:${TAG}
-    _info "Clear intermediate image ..."
-    docker ps -a | grep "Exited" | awk '{print $1 }' | xargs docker stop
-    docker ps -a | grep "Exited" | awk '{print $1 }' | xargs docker rm
-    docker rmi $(docker images -qf dangling=true) &>/dev/null
     _info "The Docker image is built: ${image_prefix}/${bin_name}:${TAG}"
   else
     echo "Please make sure the position variable is local, docker or linux."
@@ -81,7 +77,7 @@ function main() {
   BRANCH=$(get_branch)
   COMMIT=$(get_commit)
   DATE=$(date '+%Y-%m-%d %H:%M:%S')
-  Path="${PKG}/version"
+  Path="$4/version"
   _version "Build time (Build Time): $DATE"
   _version "Currently built version (Git Tag): $TAG"
   _version "Currently built branch (Git Branch): $BRANCH"

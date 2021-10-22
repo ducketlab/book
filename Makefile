@@ -2,7 +2,7 @@ PROJECT_NAME := "book"
 MAIN_FILE_PATH := "main.go"
 MOD_DIR := $(shell go env GOPATH)
 PKG := "github.com/ducketlab/$(PROJECT_NAME)"
-IMAGE_PREFIX := "github.com/ducketlab/book"
+IMAGE_PREFIX := "github.com/ducketlab/$(PROJECT_NAME)"
 
 all: build
 
@@ -19,11 +19,10 @@ codegen: # Init Service
 	@go generate ./...
 
 build: dep ## Build the binary file
-	@go fmt ./...
-	@bash ./scripts/build.sh local dist/${PROJECT_NAME} ${MAIN_FILE_PAHT} ${IMAGE_PREFIX} ${PKG}
+	@bash ./scripts/build.sh local dist/${PROJECT_NAME} ${MAIN_FILE_PATH} ${IMAGE_PREFIX} ${PKG}
 
 linux: ## Linux build
-	@bash ./scripts/build.sh linux dist/${PROJECT_NAME} ${MAIN_FILE_PAHT} ${IMAGE_PREFIX} ${PKG}
+	@bash ./scripts/build.sh linux dist/${PROJECT_NAME} ${MAIN_FILE_PATH} ${IMAGE_PREFIX} ${PKG}
 
 run: install codegen dep build ## Run Server
 	@./dist/${PROJECT_NAME} start
